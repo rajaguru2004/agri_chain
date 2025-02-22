@@ -117,7 +117,6 @@ class LoginScreen extends StatelessWidget {
                           color: Colors.white,
                           onPressed: () async {
                             await loginUser(context, email, password);
-                            await fetchItemDetails();
                           },
                         ),
                       ],

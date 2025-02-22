@@ -12,7 +12,7 @@ class VegetablesSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<FoodDetail> vegItems = filteredContents
-        .where((food) => food.category.toLowerCase() == 'vegetable')
+        .where((food) => food.category.toLowerCase() == 'vegetables')
         .toList();
     return GridView.builder(
       shrinkWrap: true,

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:grocery_store_app/model/items_model.dart';
 import 'package:http/http.dart' as http;
 
 import '../screen/homescreen/home_page.dart';
@@ -27,6 +28,9 @@ Future<void> loginUser(
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
+      final Map<String, dynamic> map = await fetchItemDetails();
+      fetchItems(map);
+
       Navigator.push(
         context,
         PageRouteBuilder(
@@ -55,20 +59,33 @@ Future<void> loginUser(
   }
 }
 
-Future<List<Map<String, dynamic>>> fetchItemDetails() async {
+Future<Map<String, dynamic>> fetchItemDetails() async {
   final url = Uri.parse('http://192.168.95.170:3000/api/products/getProducts');
+
   try {
-    final response = await http.get(url);
+    final response = await http.get(url, headers: {
+      "Content-Type": "application/json",
+    });
+
     if (response.statusCode == 200) {
-      print(response.body);
-      dynamic result = jsonDecode(response.body);
-      print(result);
-      return [];
+      if (response.body.isNotEmpty) {
+        dynamic result = jsonDecode(response.body);
+
+        if (result is Map<String, dynamic>) {
+          return result;
+        } else if (result is List) {
+          return {"products": result}; // Wrap the list inside a Map
+        } else {
+          throw Exception("Unexpected JSON format");
+        }
+      } else {
+        throw Exception("Empty response body");
+      }
     } else {
-      return [];
+      throw Exception("Failed to load data: ${response.statusCode}");
     }
   } catch (e) {
-    print(e);
-    return [];
+    print("Error fetching items: $e");
+    return {};
   }
 }
